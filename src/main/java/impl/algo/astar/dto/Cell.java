@@ -238,7 +238,7 @@ public final class Cell {
     public double getG(Cell start, Cell end) {
         Map<Cell, Double> startGValues = gValues.get(start);
         if (startGValues != null) {
-            return startGValues.get(end);
+            return startGValues.getOrDefault(end, 1000.0);
         }
         return 1000.0;
     }
