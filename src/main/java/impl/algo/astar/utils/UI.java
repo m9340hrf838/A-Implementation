@@ -81,54 +81,52 @@ public final class UI {
     }
 
     private static void updateCellBorderImpl(Cell cell) {
+        Platform.runLater(() -> {
+            if (cell.isFence()) {
 
-        if (cell.isFence()) {
+                double borderthickness = Constants.FENCE_THICKNESS;
+                if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) borderthickness *= 2;
 
-            double borderthickness = Constants.FENCE_THICKNESS;
-            if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) borderthickness *= 2;
+                // top
+                Cell topNeighbourCell = Data.getCellFromTheGrid(
+                    (cell.getX()),
+                    (Math.max((cell.getY() - 1), 0)));
+                double topBorder = (cell.shouldDrawFence(topNeighbourCell)) ? borderthickness : 0.1;
 
-            // top
-            Cell topNeighbourCell = Data.getCellFromTheGrid(
-                (cell.getX()),
-                (Math.max((cell.getY() - 1), 0)));
-            double topBorder = (cell.shouldDrawFence(topNeighbourCell)) ? borderthickness : 0.1;
+                // bottom
+                Cell bottomNeighbourCell = Data.getCellFromTheGrid(
+                    (cell.getX()),
+                    Math.min((cell.getY() + 1), (Constants.GRID_HEIGHT - 1))
+                );
+                double bottomBorder = (cell.shouldDrawFence(bottomNeighbourCell)) ? borderthickness : 0.1;
 
-            // bottom
-            Cell bottomNeighbourCell = Data.getCellFromTheGrid(
-                (cell.getX()),
-                Math.min((cell.getY() + 1), (Constants.GRID_HEIGHT - 1))
-            );
-            double bottomBorder = (cell.shouldDrawFence(bottomNeighbourCell)) ? borderthickness : 0.1;
+                // left
+                Cell leftNeighbourCell = Data.getCellFromTheGrid(
+                    Math.max((cell.getX() - 1), 0),
+                    cell.getY());
+                double leftBorder = (cell.shouldDrawFence(leftNeighbourCell)) ? borderthickness : 0.1;
 
-            // left
-            Cell leftNeighbourCell = Data.getCellFromTheGrid(
-                Math.max((cell.getX() - 1), 0),
-                cell.getY());
-            double leftBorder = (cell.shouldDrawFence(leftNeighbourCell)) ? borderthickness : 0.1;
+                // right
+                Cell rightNeighbourCell = Data.getCellFromTheGrid(
+                    Math.min((cell.getX() + 1), (Constants.GRID_WIDTH - 1)),
+                    cell.getY());
+                double rightBorder = (cell.shouldDrawFence(rightNeighbourCell)) ? borderthickness : 0.1;
 
-            // right
-            Cell rightNeighbourCell = Data.getCellFromTheGrid(
-                Math.min((cell.getX() + 1), (Constants.GRID_WIDTH - 1)),
-                cell.getY());
-            double rightBorder = (cell.shouldDrawFence(rightNeighbourCell)) ? borderthickness : 0.1;
 
-//            Platform.runLater(() ->
                 cell.getFxNode()
-                .setBorder(
-                    UI.buildBorder(
-                        cell.getBorderColor(),
-                        topBorder, bottomBorder, leftBorder, rightBorder));
-//            );
-        } else {
-            double borderThickness = 0.1;
-//            Platform.runLater(() ->
+                    .setBorder(
+                        UI.buildBorder(
+                            cell.getBorderColor(),
+                            topBorder, bottomBorder, leftBorder, rightBorder));
+            } else {
+                double borderThickness = 0.1;
                 cell.getFxNode()
-                .setBorder(
-                    UI.buildBorder(
-                        cell.getBorderColor(),
-                        borderThickness, borderThickness, borderThickness, borderThickness));
-//        );
-        }
+                    .setBorder(
+                        UI.buildBorder(
+                            cell.getBorderColor(),
+                            borderThickness, borderThickness, borderThickness, borderThickness));
+            }
+        });
     }
 
     //==================================================================================================================
