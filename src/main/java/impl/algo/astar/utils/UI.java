@@ -275,16 +275,9 @@ public final class UI {
         cell.getFxNode().setOnMousePressed(mouseEvent -> UI.activateCell(cell));
 
         cell.getFxNode().setOnMouseEntered(mouseEvent -> {
-            if (mouseEvent.isPrimaryButtonDown()) {
+            if (mouseEvent.isControlDown()) {
                 UI.activateCell(cell);
             }
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
         });
     }
 
