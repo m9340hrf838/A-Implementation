@@ -104,18 +104,15 @@ public final class Cell {
     public ConcurrentLinkedQueue<Cell> getFence(CellType type) {
 
         ConcurrentLinkedQueue<Cell> result = new ConcurrentLinkedQueue<>();
-        result.add(this);
 
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 Cell cellFromTheGrid = Data.getCellFromTheGrid(x + i, y + j);
 
                 // if: not same cell; is not a fence already; type is undefined or the new type has bigger priority
-                if (!compareCoordinates(cellFromTheGrid)
-                    && !cellFromTheGrid.isFence()
+                if (!cellFromTheGrid.isFence()
                     && (cellFromTheGrid.cellType == null || cellFromTheGrid.cellType.priority <= type.priority)) {
 
-                    cellFromTheGrid.fence = true;
                     result.add(cellFromTheGrid);
                 }
             }
@@ -141,12 +138,17 @@ public final class Cell {
      */
     public void changeType(CellType type) throws CellMutationNotAllowed {
 
-        if (cellType == null || type.getPriority() > cellType.getPriority() || type.equals(CellType.EMPTY) || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
-            Platform.runLater(() -> {
-                if (!type.equals(CellType.DEAD_BORDER) && !type.equals(CellType.OBSTACLE)) fence = false;
-                if (type.equals(CellType.DEAD_BORDER) || type.equals(CellType.OBSTACLE)) fence = true;
+        if (cellType == null
+            || type.getPriority() > cellType.getPriority()
+            || type.equals(CellType.EMPTY)
+            || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
 
-                cellType = type;
+            if (!type.equals(CellType.DEAD_BORDER) && !type.equals(CellType.OBSTACLE)) fence = false;
+            if (type.equals(CellType.DEAD_BORDER) || type.equals(CellType.OBSTACLE)) fence = true;
+
+            cellType = type;
+
+            Platform.runLater(() -> {
                 fxNode.setBackground(UI.buildBackground(cellType));
             });
 
@@ -157,13 +159,19 @@ public final class Cell {
 
     public void changeType(CellType type, String color) throws CellMutationNotAllowed {
 
-        if (cellType == null || type.getPriority() > cellType.getPriority() || type.equals(CellType.EMPTY) || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
-            Platform.runLater(() -> {
-                if (!type.equals(CellType.DEAD_BORDER) && !type.equals(CellType.OBSTACLE)) fence = false;
-                if (type.equals(CellType.DEAD_BORDER) || type.equals(CellType.OBSTACLE)) fence = true;
+        if (cellType == null
+            || type.getPriority() > cellType.getPriority()
+            || type.equals(CellType.EMPTY)
+            || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
 
-                cellType = type;
-                cellType.setColor(color);
+
+            if (!type.equals(CellType.DEAD_BORDER) && !type.equals(CellType.OBSTACLE)) fence = false;
+            if (type.equals(CellType.DEAD_BORDER) || type.equals(CellType.OBSTACLE)) fence = true;
+
+            cellType = type;
+            cellType.setColor(color);
+
+            Platform.runLater(() -> {
                 fxNode.setBackground(UI.buildBackground(cellType));
             });
 
