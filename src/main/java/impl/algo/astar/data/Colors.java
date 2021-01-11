@@ -12,4 +12,7 @@ public interface Colors {
     String BORDER_COLOR = "#999999";
     String LOWER_BOUND_PATH_COLOR = "#444400";
     String UPPER_BOUND_PATH_COLOR = "#FFF2B3";
+
+    String OBSTACLE_CELL_BACKGROUND_COLOR = "#eeeeee";
+    String DEAD_BORDER_CELL_BACKGROUND_COLOR = "cccccc";
 }

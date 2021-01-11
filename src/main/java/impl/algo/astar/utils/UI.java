@@ -118,6 +118,15 @@ public final class UI {
                         UI.buildBorder(
                             cell.getBorderColor(),
                             topBorder, bottomBorder, leftBorder, rightBorder));
+
+                if (cell.isFence()) {
+                    if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) {
+                        cell.getFxNode().setBackground(UI.buildBackground(Constants.OBSTACLE_CELL_BACKGROUND_COLOR));
+                    } else {
+                        cell.getFxNode().setBackground(UI.buildBackground(Constants.DEAD_BORDER_CELL_BACKGROUND_COLOR));
+                    }
+                }
+
             } else {
                 double borderThickness = 0.1;
                 cell.getFxNode()
