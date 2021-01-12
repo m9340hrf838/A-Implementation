@@ -80,10 +80,9 @@ public class Data {
                         try {
                             if (c.getCellType().equals(Cell.CellType.OBSTACLE)) {
                                 c.changeType(Cell.CellType.EMPTY);
-
-                                if (c.isObstacle()) c.setObstacle(false);
-                                if (c.isDeadBorder()) c.setDeadBorder(false);
                             }
+                            if (c.isObstacle()) c.setObstacle(false);
+                            if (c.isDeadBorder()) c.setDeadBorder(false);
                             UI.updateCellBorder(c);
                         } catch (CellMutationNotAllowed e) {
                             System.out.println(e);
@@ -125,7 +124,10 @@ public class Data {
                     DEAD_BORDER.remove(group);
                     group.forEach(c -> {
                         try {
-                            c.changeType(Cell.CellType.EMPTY);
+
+                            if (c.getCellType().equals(Cell.CellType.DEAD_BORDER)) {
+                                c.changeType(Cell.CellType.EMPTY);
+                            }
                             if (c.isObstacle()) c.setObstacle(false);
                             if (c.isDeadBorder()) c.setDeadBorder(false);
 
