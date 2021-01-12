@@ -19,7 +19,8 @@ public final class Cell {
     BorderPane fxNode;
     private int x, y;
     private volatile CellType cellType = CellType.EMPTY;
-    private volatile boolean fence = false;
+    private volatile boolean obstacle = false;
+    private volatile boolean deadBorder = false;
 
     private Map<Cell, Map<Cell, Cell>> parentValues = new ConcurrentHashMap<>();
     private Map<Cell, Map<Cell, Double>> gValues = new ConcurrentHashMap<>();
@@ -110,7 +111,7 @@ public final class Cell {
                 Cell cellFromTheGrid = Data.getCellFromTheGrid(x + i, y + j);
 
                 // if: not same cell; is not a fence already; type is undefined or the new type has bigger priority
-                if (!cellFromTheGrid.isFence()
+                if (!(cellFromTheGrid.isObstacle() || cellFromTheGrid.isDeadBorder())
                     && (cellFromTheGrid.cellType == null || cellFromTheGrid.cellType.priority <= type.priority)) {
 
                     result.add(cellFromTheGrid);
@@ -143,8 +144,14 @@ public final class Cell {
             || type.equals(CellType.EMPTY)
             || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
 
-            if (!type.equals(CellType.DEAD_BORDER) && !type.equals(CellType.OBSTACLE)) fence = false;
-            if (type.equals(CellType.DEAD_BORDER) || type.equals(CellType.OBSTACLE)) fence = true;
+            if (type.equals(CellType.DEAD_BORDER)) {
+                setObstacle(false);
+                setDeadBorder(true);
+            }
+            if (type.equals(CellType.OBSTACLE)) {
+                setDeadBorder(false);
+                setObstacle(true);
+            }
 
             cellType = type;
 
@@ -165,8 +172,14 @@ public final class Cell {
             || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
 
 
-            if (!type.equals(CellType.DEAD_BORDER) && !type.equals(CellType.OBSTACLE)) fence = false;
-            if (type.equals(CellType.DEAD_BORDER) || type.equals(CellType.OBSTACLE)) fence = true;
+            if (type.equals(CellType.DEAD_BORDER)) {
+                setObstacle(false);
+                setDeadBorder(true);
+            }
+            if (type.equals(CellType.OBSTACLE)) {
+                setObstacle(true);
+                setDeadBorder(false);
+            }
 
             cellType = type;
             cellType.setColor(color);
@@ -195,27 +208,26 @@ public final class Cell {
         return x == cell.getX() && y == cell.getY();
     }
 
-    public boolean shouldDrawFence(Cell cell) {
+    public boolean shouldDrawFence(Cell neighbouringCell) {
 
-        boolean isSameType = (cell.isFence() && isFence());
+        // don't draw border between two obstacle cells
+        if (isDeadBorder() && neighbouringCell.isDeadBorder()) {
+            if (Data.DEAD_BORDER.stream().anyMatch(group -> group.stream().filter(c -> c.compareCoordinates(neighbouringCell) || c.compareCoordinates(this)).count() > 1))
+                return false;
+        }
 
-        boolean isCellBlocked = cellType.equals(CellType.OBSTACLE) || cellType.equals(CellType.DEAD_BORDER);
+        // don't draw border between two dead border cells
+        if (isObstacle() && neighbouringCell.isObstacle()) {
+            if (Data.GROUPED_OBSTACLES.stream().anyMatch(group -> group.stream().filter(c -> c.compareCoordinates(neighbouringCell) || c.compareCoordinates(this)).count() > 1))
+                return false;
+        }
 
-        return !isSameType && isCellBlocked;
-    }
-
-    public boolean isFence() {
-        return fence;
-    }
-
-    public void setFence(boolean fence) {
-        this.fence = fence;
-        UI.updateCellBorder(this);
+        return true;
     }
 
     public String getBorderColor() {
-        if (fence || cellType.equals(CellType.DEAD_BORDER)) return Constants.DEAD_BORDER_COLOR;
-        if (cellType.equals(CellType.OBSTACLE)) return Constants.OBSTACLE_COLOR;
+        if (isDeadBorder()) return Constants.DEAD_BORDER_COLOR;
+        if (isObstacle()) return Constants.OBSTACLE_COLOR;
         return Constants.BORDER_COLOR;
     }
 
@@ -279,6 +291,24 @@ public final class Cell {
 
             gForEndPoints.put(end, parent);
         }
+    }
+
+    public boolean isObstacle() {
+        return obstacle;
+    }
+
+    public void setObstacle(boolean obstacle) {
+        this.obstacle = obstacle;
+        UI.updateCellBorder(this);
+    }
+
+    public boolean isDeadBorder() {
+        return deadBorder;
+    }
+
+    public void setDeadBorder(boolean deadBorder) {
+        this.deadBorder = deadBorder;
+        UI.updateCellBorder(this);
     }
 
     public enum CellType {

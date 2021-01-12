@@ -78,7 +78,12 @@ public class Data {
                     group.forEach(c -> {
                         OBSTACLES.remove(c);
                         try {
-                            if (c.getCellType().equals(Cell.CellType.OBSTACLE)) c.changeType(Cell.CellType.EMPTY);
+                            if (c.getCellType().equals(Cell.CellType.OBSTACLE)) {
+                                c.changeType(Cell.CellType.EMPTY);
+
+                                if (c.isObstacle()) c.setObstacle(false);
+                                if (c.isDeadBorder()) c.setDeadBorder(false);
+                            }
                             UI.updateCellBorder(c);
                         } catch (CellMutationNotAllowed e) {
                             System.out.println(e);
@@ -86,7 +91,7 @@ public class Data {
                     });
                 });
 
-            } else if (!cell.isFence()) {
+            } else if (!(cell.isObstacle() || cell.isDeadBorder())) {
                 // ADD
 
                 ConcurrentLinkedQueue<Cell> fenceCells = cell.getFence(Cell.CellType.OBSTACLE);
@@ -121,6 +126,9 @@ public class Data {
                     group.forEach(c -> {
                         try {
                             c.changeType(Cell.CellType.EMPTY);
+                            if (c.isObstacle()) c.setObstacle(false);
+                            if (c.isDeadBorder()) c.setDeadBorder(false);
+
                             UI.updateCellBorder(c);
                         } catch (CellMutationNotAllowed e) {
                             System.out.println(e);
@@ -129,7 +137,7 @@ public class Data {
 
                 });
 
-            } else if (!cell.isFence()) {
+            } else if (!(cell.isDeadBorder() || cell.isObstacle())) {
                 // ADD
                 ConcurrentLinkedQueue<Cell> fenceCells = cell.getFence(Cell.CellType.DEAD_BORDER);
 

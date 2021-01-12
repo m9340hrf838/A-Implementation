@@ -82,7 +82,7 @@ public final class UI {
 
     private static void updateCellBorderImpl(Cell cell) {
         Platform.runLater(() -> {
-            if (cell.isFence()) {
+            if (cell.isDeadBorder() || cell.isObstacle()) {
 
                 double borderthickness = Constants.FENCE_THICKNESS;
                 if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) borderthickness *= 2;
@@ -119,7 +119,7 @@ public final class UI {
                             cell.getBorderColor(),
                             topBorder, bottomBorder, leftBorder, rightBorder));
 
-                if (cell.isFence()) {
+                if (cell.isDeadBorder() || cell.isObstacle()) {
                     if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) {
                         cell.getFxNode().setBackground(UI.buildBackground(Constants.OBSTACLE_CELL_BACKGROUND_COLOR));
                     } else {
@@ -315,7 +315,10 @@ public final class UI {
             Data.BLOCKS.forEach(cell -> {
                 try {
                     cell.changeType(Cell.CellType.EMPTY);
-                    cell.setFence(false);
+
+                    if (cell.isObstacle()) cell.setObstacle(false);
+                    if (cell.isDeadBorder()) cell.setDeadBorder(false);
+
                 } catch (CellMutationNotAllowed e) {
                     System.out.println(e);
                 }
@@ -325,7 +328,10 @@ public final class UI {
             Data.OBSTACLES.stream().forEach(cell -> {
                 try {
                     if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) cell.changeType(Cell.CellType.EMPTY);
-                    cell.setFence(false);
+
+                    if (cell.isObstacle()) cell.setObstacle(false);
+                    if (cell.isDeadBorder()) cell.setDeadBorder(false);
+
                     cell.getFxNode().setBorder(buildBorder(Constants.BORDER_COLOR));
                 } catch (CellMutationNotAllowed e) {
                     System.out.println(e);
@@ -337,7 +343,10 @@ public final class UI {
             Data.DEAD_BORDER.stream().flatMap(Collection::stream).forEach(cell -> {
                 try {
                     if (cell.getCellType().equals(Cell.CellType.DEAD_BORDER)) cell.changeType(Cell.CellType.EMPTY);
-                    cell.setFence(false);
+
+                    if (cell.isObstacle()) cell.setObstacle(false);
+                    if (cell.isDeadBorder()) cell.setDeadBorder(false);
+
                     cell.getFxNode().setBorder(buildBorder(Constants.BORDER_COLOR));
                 } catch (CellMutationNotAllowed e) {
                     System.out.println(e);
