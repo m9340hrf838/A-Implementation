@@ -38,7 +38,7 @@ public final class Cell {
         // top
         if (this.y > 0) {
             Cell top = Data.getCellFromTheGrid(x, y - 1);
-            top.setG(start, end, this.gValues.get(start).get(end) + 0.5);
+            top.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(top)
@@ -54,7 +54,7 @@ public final class Cell {
         // bottom
         if (this.y < Constants.GRID_HEIGHT) {
             Cell bottom = Data.getCellFromTheGrid(x, y + 1);
-            bottom.setG(start, end, this.gValues.get(start).get(end) + 0.5);
+            bottom.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(bottom)
@@ -70,7 +70,7 @@ public final class Cell {
         // left
         if (this.x > 0) {
             Cell left = Data.getCellFromTheGrid(x - 1, y);
-            left.setG(start, end, this.gValues.get(start).get(end) + 0.5);
+            left.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(left)
@@ -86,7 +86,7 @@ public final class Cell {
         // right
         if (this.y < Constants.GRID_WIDTH) {
             Cell right = Data.getCellFromTheGrid(x + 1, y);
-            right.setG(start, end, this.gValues.get(start).get(end) + 0.5);
+            right.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(right)
@@ -201,13 +201,12 @@ public final class Cell {
 
     public double calculateF(Cell start, Cell end) {
 
-        int deltaX = this.x - end.getX();
-        if (deltaX < 0) deltaX *= -1;
+        int deltaX = Math.abs(this.x - end.getX());
+        int deltaY = Math.abs(this.y - end.getY());
 
-        int deltaY = this.y - end.getY();
-        if (deltaY < 0) deltaY *= -1;
+        double h = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-        return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY)) + getG(start, end);
+        return getG(start, end) + h;
     }
 
     public boolean compareCoordinates(Cell cell) {

@@ -60,7 +60,7 @@ public class AStarAlgorithm {
         ConcurrentSkipListSet<Cell> open = new ConcurrentSkipListSet<>(Comparator.comparingDouble(cell -> cell.calculateF(start, end)));
         ConcurrentLinkedQueue<Cell> closed = new ConcurrentLinkedQueue<>();
 
-        start.setG(start, end, 1);
+        start.setG(start, end, 0);
         open.add(start);
 
         // execute the algorithm implementation
