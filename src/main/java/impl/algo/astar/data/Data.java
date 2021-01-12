@@ -161,7 +161,7 @@ public class Data {
 
     public static void addToPath(Cell cell, String color) {
         try {
-            cell.changeType(Cell.CellType.PATH, color);
+            cell.changeTypeToPath(color);
             FINAL_PATH_CELLS.add(cell);
         } catch (Exception e) {
             System.out.println(e.getMessage());

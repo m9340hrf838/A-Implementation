@@ -139,10 +139,31 @@ public final class Cell {
      */
     public void changeType(CellType type) throws CellMutationNotAllowed {
 
-        if (cellType == null
+        if (cellType != null && type.equals(CellType.EMPTY) && (isObstacle() || isDeadBorder())) {
+
+            if (isObstacle())
+                if ((Data.GROUPED_OBSTACLES.stream().anyMatch(group -> group.stream().anyMatch(this::compareCoordinates)))) {
+                    cellType = CellType.OBSTACLE;
+                    Platform.runLater(() -> fxNode.setBackground(UI.buildBackground(Constants.OBSTACLE_CELL_BACKGROUND_COLOR)));
+                } else {
+                    cellType = CellType.EMPTY;
+                    Platform.runLater(() -> fxNode.setBackground(UI.buildBackground(cellType)));
+                }
+
+            if (isDeadBorder())
+                if ((Data.DEAD_BORDER.stream().anyMatch(group -> group.stream().anyMatch(this::compareCoordinates)))) {
+                    cellType = CellType.DEAD_BORDER;
+                    Platform.runLater(() -> fxNode.setBackground(UI.buildBackground(Constants.DEAD_BORDER_CELL_BACKGROUND_COLOR)));
+                } else {
+                    cellType = CellType.EMPTY;
+                    Platform.runLater(() -> fxNode.setBackground(UI.buildBackground(cellType)));
+                }
+
+        } else if (cellType == null
             || type.getPriority() > cellType.getPriority()
+            || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))
             || type.equals(CellType.EMPTY)
-            || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
+        ) {
 
             if (type.equals(CellType.DEAD_BORDER)) {
                 setObstacle(false);
@@ -155,33 +176,18 @@ public final class Cell {
 
             cellType = type;
 
-            Platform.runLater(() -> {
-                fxNode.setBackground(UI.buildBackground(cellType));
-            });
+            Platform.runLater(() -> fxNode.setBackground(UI.buildBackground(cellType)));
 
         } else {
             throw new CellMutationNotAllowed(String.format("Cell mutation from %s to %s  on the coordinates x:%d y:%d is not allowed", cellType.toString(), type.toString(), x, y));
         }
     }
 
-    public void changeType(CellType type, String color) throws CellMutationNotAllowed {
+    public void changeTypeToPath(String color) throws CellMutationNotAllowed {
 
-        if (cellType == null
-            || type.getPriority() > cellType.getPriority()
-            || type.equals(CellType.EMPTY)
-            || (cellType.equals(CellType.PATH) && type.equals(CellType.PATH))) {
+        if (CellType.PATH.getPriority() > cellType.getPriority() || cellType.equals(CellType.PATH)) {
 
-
-            if (type.equals(CellType.DEAD_BORDER)) {
-                setObstacle(false);
-                setDeadBorder(true);
-            }
-            if (type.equals(CellType.OBSTACLE)) {
-                setObstacle(true);
-                setDeadBorder(false);
-            }
-
-            cellType = type;
+            cellType = CellType.PATH;
             cellType.setColor(color);
 
             Platform.runLater(() -> {
@@ -189,7 +195,7 @@ public final class Cell {
             });
 
         } else {
-            throw new CellMutationNotAllowed(String.format("Cell mutation from %s to %s  on the coordinates x:%d y:%d is not allowed", cellType.toString(), type.toString(), x, y));
+            throw new CellMutationNotAllowed(String.format("Cell mutation from %s to %s  on the coordinates x:%d y:%d is not allowed", cellType.toString(), "PATH", x, y));
         }
     }
 
