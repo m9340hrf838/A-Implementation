@@ -6,11 +6,11 @@ import impl.algo.astar.dto.Cell;
 import impl.algo.astar.utils.UI;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,8 +57,8 @@ public class AStarAlgorithm {
     private static Data.FinalPath calculateOnePath(final Cell start, final Cell end, final String pathColor) {
 
         // initialize open and closed
-        ConcurrentSkipListSet<Cell> open = new ConcurrentSkipListSet<>(Comparator.comparingDouble(cell -> cell.calculateF(start, end)));
-        ConcurrentLinkedQueue<Cell> closed = new ConcurrentLinkedQueue<>();
+        TreeSet<Cell> open = new TreeSet<>(Comparator.comparingDouble(cell -> cell.calculateF(start, end)));
+        List<Cell> closed = new LinkedList<>();
 
         start.setG(start, end, 0);
         open.add(start);
@@ -73,7 +73,7 @@ public class AStarAlgorithm {
         return new Data.FinalPath(pathColor, finalPath);
     }
 
-    private static ConcurrentLinkedDeque<Cell> runTheAlgorithmLoop(String pathColor, ConcurrentSkipListSet<Cell> open, ConcurrentLinkedQueue<Cell> closed, final Cell start, final Cell end) {
+    private static ConcurrentLinkedDeque<Cell> runTheAlgorithmLoop(String pathColor, TreeSet<Cell> open, List<Cell> closed, final Cell start, final Cell end) {
 
         ConcurrentLinkedDeque<Cell> path = new ConcurrentLinkedDeque<>();
 

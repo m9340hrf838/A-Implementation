@@ -10,9 +10,9 @@ import javafx.scene.layout.BorderPane;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 public final class Cell {
 
@@ -31,7 +31,7 @@ public final class Cell {
         this.y = y;
     }
 
-    public List<Cell> getNeighbours(Cell start, Cell end, ConcurrentSkipListSet<Cell> open, ConcurrentLinkedQueue<Cell> closed) {
+    public List<Cell> getNeighbours(Cell start, Cell end, TreeSet<Cell> open, List<Cell> closed) {
 
         List<Cell> neighbours = new LinkedList<>();
 
@@ -314,6 +314,17 @@ public final class Cell {
     public void setDeadBorder(boolean deadBorder) {
         this.deadBorder = deadBorder;
         UI.updateCellBorder(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return ((x + y) * (x + y + 1) + y) / 2;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Cell)) return false;
+        return this.compareCoordinates((Cell) obj);
     }
 
     public enum CellType {
