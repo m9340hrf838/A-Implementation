@@ -56,8 +56,19 @@ public class AStarAlgorithm {
 
     private static Data.FinalPath calculateOnePath(final Cell start, final Cell end, final String pathColor) {
 
+        Comparator<Cell> cellComparator = (Cell o1, Cell o2) -> {
+            if (o1.compareCoordinates(o2)) {
+                return 0;
+            }
+            if (o1.calculateF(start, end) > o2.calculateF(start, end)) {
+                return 1;
+            } else {
+                return -1;
+            }
+        };
+
         // initialize open and closed
-        TreeSet<Cell> open = new TreeSet<>(Comparator.comparingDouble(cell -> cell.calculateF(start, end)));
+        TreeSet<Cell> open = new TreeSet<>(cellComparator);
         List<Cell> closed = new LinkedList<>();
 
         start.setG(start, end, 0);
@@ -80,6 +91,8 @@ public class AStarAlgorithm {
         while (true) {
             // get the node with the smallest F
             Cell nextCell = open.pollFirst();
+            System.out.println("polled OPEN x:" + nextCell.getX() + " y:" + nextCell.getY() + "\tf:" + nextCell.calculateF(start, end) + " g:" + nextCell.getG(start, end));
+            System.out.println("size of OPEN:" + open.size());
 
             // if there are no more cells in the open then the calculation has come to an end without reaching the end point
             if (nextCell == null) break;
@@ -106,7 +119,8 @@ public class AStarAlgorithm {
 
             // add neighbours to open
             for (Cell neighbour : neighbours) {
-
+                System.out.println("new OPEN x:" + neighbour.getX() + " y:" + neighbour.getY() + "\tf:" + neighbour.calculateF(start, end) + " g:" + neighbour.getG(start, end));
+                System.out.println("size of OPEN:" + open.size());
                 neighbour.setParent(start, end, nextCell);
                 open.add(neighbour);
                 Data.addToOpen(neighbour);

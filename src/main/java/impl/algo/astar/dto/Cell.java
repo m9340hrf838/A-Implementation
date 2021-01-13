@@ -205,8 +205,9 @@ public final class Cell {
         int deltaY = Math.abs(this.y - end.getY());
 
         double h = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+        double g = getG(start, end);
 
-        return getG(start, end) + h;
+        return g + h;
     }
 
     public boolean compareCoordinates(Cell cell) {
