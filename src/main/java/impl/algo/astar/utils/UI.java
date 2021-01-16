@@ -320,7 +320,7 @@ public final class UI {
                     if (cell.isDeadBorder()) cell.setDeadBorder(false);
 
                 } catch (CellMutationNotAllowed e) {
-                    System.out.println(e);
+                    System.out.println(e.getMessage());
                 }
             });
             Data.BLOCKS.clear();
@@ -334,7 +334,7 @@ public final class UI {
 
                     cell.getFxNode().setBorder(buildBorder(Constants.BORDER_COLOR));
                 } catch (CellMutationNotAllowed e) {
-                    System.out.println(e);
+                    System.out.println(e.getMessage());
                 }
             });
             Data.OBSTACLES.clear();
@@ -349,7 +349,7 @@ public final class UI {
 
                     cell.getFxNode().setBorder(buildBorder(Constants.BORDER_COLOR));
                 } catch (CellMutationNotAllowed e) {
-                    System.out.println(e);
+                    System.out.println(e.getMessage());
                 }
             });
             Data.DEAD_BORDER.clear();
@@ -364,7 +364,7 @@ public final class UI {
             try {
                 cell.changeType(Cell.CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         });
         Data.START_POINTS.clear();
@@ -377,7 +377,7 @@ public final class UI {
             try {
                 cell.changeType(Cell.CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         });
         Data.END_POINTS.clear();
@@ -404,7 +404,7 @@ public final class UI {
             try {
                 cell.changeType(Cell.CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         });
         Data.FINAL_PATH_CELLS.clear();
@@ -415,7 +415,7 @@ public final class UI {
             try {
                 cell.changeType(Cell.CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         });
         Data.OPEN.clear();
@@ -424,7 +424,7 @@ public final class UI {
             try {
                 cell.changeType(Cell.CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         });
         Data.CLOSED.clear();

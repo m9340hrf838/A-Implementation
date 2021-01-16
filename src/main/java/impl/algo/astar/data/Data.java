@@ -3,6 +3,8 @@ package impl.algo.astar.data;
 import impl.algo.astar.Exceptions.CellMutationNotAllowed;
 import impl.algo.astar.dto.Cell;
 import impl.algo.astar.utils.UI;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -85,7 +87,7 @@ public class Data {
                             if (c.isDeadBorder()) c.setDeadBorder(false);
                             UI.updateCellBorder(c);
                         } catch (CellMutationNotAllowed e) {
-                            System.out.println(e);
+                            System.out.println(e.getMessage());
                         }
                     });
                 });
@@ -133,7 +135,7 @@ public class Data {
 
                             UI.updateCellBorder(c);
                         } catch (CellMutationNotAllowed e) {
-                            System.out.println(e);
+                            System.out.println(e.getMessage());
                         }
                     });
 
@@ -175,7 +177,7 @@ public class Data {
                 OPEN.add(cell);
             }
         } catch (CellMutationNotAllowed e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
 
     }
@@ -188,7 +190,7 @@ public class Data {
                 OPEN.removeIf(cell::compareCoordinates);
             }
         } catch (CellMutationNotAllowed e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
