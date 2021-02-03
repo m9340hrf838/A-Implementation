@@ -38,7 +38,6 @@ public final class Cell {
         // top
         if (this.y > 0) {
             Cell top = Data.getCellFromTheGrid(x, y - 1);
-            top.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(top)
@@ -47,6 +46,7 @@ public final class Cell {
                 && closed.stream().noneMatch(top::compareCoordinates)
                 && open.stream().noneMatch(cell -> cell.compareCoordinates(top) && cell.calculateF(start, end) <= top.calculateF(start, end))
             ) {
+                top.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
                 neighbours.add(top);
             }
         }
@@ -54,7 +54,6 @@ public final class Cell {
         // bottom
         if (this.y < Constants.GRID_HEIGHT) {
             Cell bottom = Data.getCellFromTheGrid(x, y + 1);
-            bottom.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(bottom)
@@ -63,6 +62,7 @@ public final class Cell {
                 && closed.stream().noneMatch(bottom::compareCoordinates)
                 && open.stream().noneMatch(cell -> cell.compareCoordinates(bottom) && cell.calculateF(start, end) <= bottom.calculateF(start, end))
             ) {
+                bottom.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
                 neighbours.add(bottom);
             }
         }
@@ -70,7 +70,6 @@ public final class Cell {
         // left
         if (this.x > 0) {
             Cell left = Data.getCellFromTheGrid(x - 1, y);
-            left.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(left)
@@ -79,6 +78,7 @@ public final class Cell {
                 && closed.stream().noneMatch(left::compareCoordinates)
                 && open.stream().noneMatch(cell -> cell.compareCoordinates(left) && cell.calculateF(start, end) <= left.calculateF(start, end))
             ) {
+                left.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
                 neighbours.add(left);
             }
         }
@@ -86,7 +86,6 @@ public final class Cell {
         // right
         if (this.y < Constants.GRID_WIDTH) {
             Cell right = Data.getCellFromTheGrid(x + 1, y);
-            right.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
 
             // if the neighbour is: not the current cell, not blocked, not in closed, not in open with a lower f
             if (!compareCoordinates(right)
@@ -95,6 +94,7 @@ public final class Cell {
                 && closed.stream().noneMatch(right::compareCoordinates)
                 && open.stream().noneMatch(cell -> cell.compareCoordinates(right) && cell.calculateF(start, end) <= right.calculateF(start, end))
             ) {
+                right.setG(start, end, this.gValues.get(start).get(end) + Constants.G_VALUE);
                 neighbours.add(right);
             }
         }
