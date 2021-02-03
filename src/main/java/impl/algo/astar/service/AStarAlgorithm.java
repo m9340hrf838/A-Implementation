@@ -122,9 +122,6 @@ public class AStarAlgorithm {
                 neighbour.setParent(start, end, nextCell);
 
                 if (open.stream().noneMatch(cell -> neighbour.compareCoordinates(cell) && cell.calculateF(start, end) <= neighbour.calculateF(start, end))) {
-
-                    Platform.runLater(() -> neighbour.getFxNode().setCenter(new Label((neighbour.calculateF(start, end) + "").substring(0, 3))));
-
                     open.add(neighbour);
                     Data.addToOpen(neighbour);
                 }
