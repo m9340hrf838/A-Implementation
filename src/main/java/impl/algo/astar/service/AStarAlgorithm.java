@@ -13,25 +13,22 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class AStarAlgorithm {
 
-    private static final ExecutorService multipleThreads = Executors.newCachedThreadPool();
-    private static final ExecutorService singleThread = Executors.newSingleThreadExecutor();
-
     public static void execute() {
-        singleThread.submit(AStarAlgorithm::start);
+        Thread executionThread = new Thread(AStarAlgorithm::start);
+        executionThread.setDaemon(true);
+        executionThread.setName("Execution Thread");
+        executionThread.start();
     }
 
     private static void start() {
+
         // go through the end points
         for (Cell end : Data.END_POINTS) {
-            multipleThreads.submit(() -> {
+            Thread pathGroupdThread = new Thread(() -> {
 
                 // calculate a color for all the paths that lead to this endpoint
                 String endPointSpecificPathColor = UI.updatePathColor();
@@ -40,21 +37,23 @@ public class AStarAlgorithm {
                 ConcurrentLinkedDeque<Data.FinalPath> pathsByEndPoint = new ConcurrentLinkedDeque<>();
 
                 // go through all start points in parallel
-                Data.START_POINTS.parallelStream().forEach(start -> {
+                for (Cell start : Data.START_POINTS) {
 
-                    // start a callable thread which will return a value (that is done only for the loop to wait for all paths to be calculated before changing endpoint)
-                    try {
-                        multipleThreads.submit(new PathThread(start, end, endPointSpecificPathColor, pathsByEndPoint)).get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        System.out.println("\nAStarAlgorithm.java -> execute() -> multipleThreads.submit(new PathThread(start, end, endPointSpecificPathColor, pathsByEndPoint)).get()\n");
-                        e.printStackTrace();
-                    }
-                });
+                    // start a new thread for each path
+                    Thread pathThread = new PathThread(start, end, endPointSpecificPathColor, pathsByEndPoint);
+                    pathThread.setDaemon(true);
+                    pathThread.setName(String.format("Path for start point (%d, %d) and end point (%d, %d)", start.getX(), start.getY(), end.getX(), end.getY()));
+                    pathThread.start();
+                }
 
                 // update Data with the newly calculated path
                 Data.FINAL_PATHS.add(pathsByEndPoint);
 
             });
+            pathGroupdThread.setDaemon(true);
+            pathGroupdThread.setName(String.format("Path for end point (%d, %d)", end.getX(), end.getY()));
+            pathGroupdThread.start();
+
         }
     }
 
@@ -177,7 +176,7 @@ public class AStarAlgorithm {
         }
     }
 
-    private static class PathThread implements Callable<Object> {
+    private static class PathThread extends Thread {
 
         private Cell start;
         private Cell end;
@@ -192,9 +191,8 @@ public class AStarAlgorithm {
         }
 
         @Override
-        public Object call() {
+        public void run() {
             pathsByEndPoint.add(calculateOnePath(start, end, pathColor));
-            return null;
         }
     }
 }
