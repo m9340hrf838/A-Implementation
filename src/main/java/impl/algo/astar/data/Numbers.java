@@ -1,7 +1,7 @@
 package impl.algo.astar.data;
 
 public interface Numbers {
-    long PAUSE_TIME = 5;
+    long PAUSE_TIME = 300;
 
     int GRID_WIDTH = 100;
     int GRID_HEIGHT = 50;

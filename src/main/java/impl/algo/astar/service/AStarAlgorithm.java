@@ -6,6 +6,8 @@ import impl.algo.astar.dto.Cell;
 import impl.algo.astar.utils.UI;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -88,6 +90,8 @@ public class AStarAlgorithm {
 
     private static ConcurrentLinkedDeque<Cell> runTheAlgorithmLoop(String pathColor, TreeSet<Cell> open, List<Cell> closed, final Cell start, final Cell end) {
 
+        Cell tempCell = null;
+
         ConcurrentLinkedDeque<Cell> path = new ConcurrentLinkedDeque<>();
 
         while (true) {
@@ -130,6 +134,14 @@ public class AStarAlgorithm {
                 }
             }
 
+            //draw partial path
+            if (tempCell != null) {
+                cleanPartialPath(tempCell, start, end);
+            }
+            tempCell = nextCell;
+            drawPartialPath(tempCell, start, end);
+
+
             // move node to closed
             closed.add(nextCell);
             Data.addToClosed(nextCell);
@@ -142,6 +154,27 @@ public class AStarAlgorithm {
         }
 
         return path;
+    }
+
+    private static void drawPartialPath(final Cell cell, final Cell start, final Cell end) {
+        if (cell.getParent(start, end) != null && !cell.getParent(start, end).compareCoordinates(cell)) {
+
+            // add cell to the latest path
+            Platform.runLater(() -> cell.getFxNode().setCenter(new Circle(Constants.CELL_WIDTH / 10, Paint.valueOf("0xff0000"))));
+
+            // move one cell back
+            drawPartialPath(cell.getParent(start, end), start, end);
+        }
+    }
+
+    private static void cleanPartialPath(final Cell cell, final Cell start, final Cell end) {
+        if (cell.getParent(start, end) != null && !cell.getParent(start, end).compareCoordinates(cell)) {
+
+            // add cell to the latest path
+            Platform.runLater(() -> cell.getFxNode().setCenter(new Label((cell.calculateF(start, end) + "").substring(0, 3))));
+            // move one cell back
+            cleanPartialPath(cell.getParent(start, end), start, end);
+        }
     }
 
     private static class PathThread implements Callable<Object> {
