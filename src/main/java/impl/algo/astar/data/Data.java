@@ -2,6 +2,8 @@ package impl.algo.astar.data;
 
 import impl.algo.astar.Exceptions.CellMutationNotAllowed;
 import impl.algo.astar.dto.Cell;
+import impl.algo.astar.dto.CellType;
+import impl.algo.astar.dto.FinalPath;
 import impl.algo.astar.utils.UI;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -28,10 +30,10 @@ public class Data {
     public static void addToStart(Cell cell) {
         try {
             if (START_POINTS.stream().anyMatch(cell::compareCoordinates)) {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
                 START_POINTS.removeIf(cell::compareCoordinates);
             } else {
-                cell.changeType(Cell.CellType.START);
+                cell.changeType(CellType.START);
                 START_POINTS.add(cell);
             }
         } catch (CellMutationNotAllowed e) {
@@ -42,10 +44,10 @@ public class Data {
     public static void addToEnd(Cell cell) {
         try {
             if (END_POINTS.stream().anyMatch(cell::compareCoordinates)) {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
                 END_POINTS.removeIf(cell::compareCoordinates);
             } else {
-                cell.changeType(Cell.CellType.END);
+                cell.changeType(CellType.END);
                 END_POINTS.add(cell);
             }
         } catch (CellMutationNotAllowed e) {
@@ -56,10 +58,10 @@ public class Data {
     public static void addToBlock(Cell cell) {
         try {
             if (BLOCKS.stream().anyMatch(cell::compareCoordinates)) {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
                 BLOCKS.removeIf(cell::compareCoordinates);
             } else {
-                cell.changeType(Cell.CellType.BLOCK);
+                cell.changeType(CellType.BLOCK);
                 BLOCKS.add(cell);
             }
         } catch (CellMutationNotAllowed e) {
@@ -80,8 +82,8 @@ public class Data {
                     group.forEach(c -> {
                         OBSTACLES.remove(c);
                         try {
-                            if (c.getCellType().equals(Cell.CellType.OBSTACLE)) {
-                                c.changeType(Cell.CellType.EMPTY);
+                            if (c.getCellType().equals(CellType.OBSTACLE)) {
+                                c.changeType(CellType.EMPTY);
                             }
                             if (c.isObstacle()) c.setObstacle(false);
                             if (c.isDeadBorder()) c.setDeadBorder(false);
@@ -95,12 +97,12 @@ public class Data {
             } else if (!(cell.isObstacle() || cell.isDeadBorder())) {
                 // ADD
 
-                ConcurrentLinkedQueue<Cell> fenceCells = cell.getFence(Cell.CellType.OBSTACLE);
+                ConcurrentLinkedQueue<Cell> fenceCells = cell.getFence(CellType.OBSTACLE);
 
                 // if the square is complete
                 if (fenceCells.size() == 9) {
                     for (Cell c : fenceCells) {
-                        c.changeType(Cell.CellType.OBSTACLE);
+                        c.changeType(CellType.OBSTACLE);
                         OBSTACLES.add(c);
                         UI.updateCellBorder(c);
                     }
@@ -127,8 +129,8 @@ public class Data {
                     group.forEach(c -> {
                         try {
 
-                            if (c.getCellType().equals(Cell.CellType.DEAD_BORDER)) {
-                                c.changeType(Cell.CellType.EMPTY);
+                            if (c.getCellType().equals(CellType.DEAD_BORDER)) {
+                                c.changeType(CellType.EMPTY);
                             }
                             if (c.isObstacle()) c.setObstacle(false);
                             if (c.isDeadBorder()) c.setDeadBorder(false);
@@ -143,12 +145,12 @@ public class Data {
 
             } else if (!(cell.isDeadBorder() || cell.isObstacle())) {
                 // ADD
-                ConcurrentLinkedQueue<Cell> fenceCells = cell.getFence(Cell.CellType.DEAD_BORDER);
+                ConcurrentLinkedQueue<Cell> fenceCells = cell.getFence(CellType.DEAD_BORDER);
 
                 // if the square is complete
                 if (fenceCells.size() == 9) {
                     for (Cell c : fenceCells) {
-                        c.changeType(Cell.CellType.DEAD_BORDER);
+                        c.changeType(CellType.DEAD_BORDER);
                         UI.updateCellBorder(c);
                     }
                     DEAD_BORDER.add(fenceCells);
@@ -173,7 +175,7 @@ public class Data {
     public static void addToOpen(Cell cell) {
         try {
             if (OPEN.stream().noneMatch(cell::compareCoordinates)) {
-                cell.changeType(Cell.CellType.OPEN);
+                cell.changeType(CellType.OPEN);
                 OPEN.add(cell);
             }
         } catch (CellMutationNotAllowed e) {
@@ -185,7 +187,7 @@ public class Data {
     public static void addToClosed(Cell cell) {
         try {
             if (CLOSED.stream().noneMatch(cell::compareCoordinates)) {
-                cell.changeType(Cell.CellType.CLOSED);
+                cell.changeType(CellType.CLOSED);
                 CLOSED.add(cell);
                 OPEN.removeIf(cell::compareCoordinates);
             }
@@ -223,23 +225,5 @@ public class Data {
         if (y >= Constants.GRID_HEIGHT) y = Constants.GRID_HEIGHT - 1;
 
         return grid[y][x];
-    }
-
-    public static class FinalPath {
-        private String color;
-        private ConcurrentLinkedDeque<Cell> path;
-
-        public FinalPath(String color, ConcurrentLinkedDeque<Cell> path) {
-            this.color = color;
-            this.path = path;
-        }
-
-        public String getColor() {
-            return color;
-        }
-
-        public ConcurrentLinkedDeque<Cell> getPath() {
-            return path;
-        }
     }
 }

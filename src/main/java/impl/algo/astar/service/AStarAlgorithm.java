@@ -3,6 +3,7 @@ package impl.algo.astar.service;
 import impl.algo.astar.data.Constants;
 import impl.algo.astar.data.Data;
 import impl.algo.astar.dto.Cell;
+import impl.algo.astar.dto.FinalPath;
 import impl.algo.astar.utils.UI;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -34,14 +35,13 @@ public class AStarAlgorithm {
                 String endPointSpecificPathColor = UI.updatePathColor();
 
                 // create storage for all teh paths to this endpoint
-                ConcurrentLinkedDeque<Data.FinalPath> pathsByEndPoint = new ConcurrentLinkedDeque<>();
+                ConcurrentLinkedDeque<FinalPath> pathsByEndPoint = new ConcurrentLinkedDeque<>();
 
                 // go through all start points in parallel
                 for (Cell start : Data.START_POINTS) {
 
                     // start a new thread for each path
-                    Thread pathThread = new PathThread(start, end, endPointSpecificPathColor, pathsByEndPoint);
-                    pathThread.setDaemon(true);
+                    Thread pathThread = new PathThread(pathsByEndPoint, () -> calculateOnePath(start, end, endPointSpecificPathColor));
                     pathThread.setName(String.format("Path for start point (%d, %d) and end point (%d, %d)", start.getX(), start.getY(), end.getX(), end.getY()));
                     pathThread.start();
                 }
@@ -57,7 +57,7 @@ public class AStarAlgorithm {
         }
     }
 
-    private static Data.FinalPath calculateOnePath(final Cell start, final Cell end, final String pathColor) {
+    private static FinalPath calculateOnePath(final Cell start, final Cell end, final String pathColor) {
 
         Comparator<Cell> cellComparator = (Cell o1, Cell o2) -> {
             if (o1.compareCoordinates(o2)) {
@@ -84,7 +84,7 @@ public class AStarAlgorithm {
         open.forEach(Data::addToOpen);
         closed.forEach(Data::addToClosed);
 
-        return new Data.FinalPath(pathColor, finalPath);
+        return new FinalPath(pathColor, finalPath);
     }
 
     private static ConcurrentLinkedDeque<Cell> runTheAlgorithmLoop(String pathColor, TreeSet<Cell> open, List<Cell> closed, final Cell start, final Cell end) {
@@ -173,26 +173,6 @@ public class AStarAlgorithm {
             Platform.runLater(() -> cell.getFxNode().setCenter(new Label((cell.calculateF(start, end) + "").substring(0, 3))));
             // move one cell back
             cleanPartialPath(cell.getParent(start, end), start, end);
-        }
-    }
-
-    private static class PathThread extends Thread {
-
-        private Cell start;
-        private Cell end;
-        private String pathColor;
-        private ConcurrentLinkedDeque<Data.FinalPath> pathsByEndPoint;
-
-        public PathThread(Cell start, Cell end, String pathColor, ConcurrentLinkedDeque<Data.FinalPath> pathsByEndPoint) {
-            this.start = start;
-            this.end = end;
-            this.pathColor = pathColor;
-            this.pathsByEndPoint = pathsByEndPoint;
-        }
-
-        @Override
-        public void run() {
-            pathsByEndPoint.add(calculateOnePath(start, end, pathColor));
         }
     }
 }

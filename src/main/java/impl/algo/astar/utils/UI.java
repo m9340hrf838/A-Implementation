@@ -4,6 +4,7 @@ import impl.algo.astar.Exceptions.CellMutationNotAllowed;
 import impl.algo.astar.data.Constants;
 import impl.algo.astar.data.Data;
 import impl.algo.astar.dto.Cell;
+import impl.algo.astar.dto.CellType;
 import impl.algo.astar.service.AStarAlgorithm;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -40,8 +41,8 @@ public final class UI {
 
     private static Consumer<Cell> cellAction;
 
-    public static Background buildBackground(Cell.CellType cellType) {
-        return buildBackground((cellType.equals(Cell.CellType.OBSTACLE) || cellType.equals(Cell.CellType.DEAD_BORDER)) ? Constants.CELL_COLOR : cellType.getColor());
+    public static Background buildBackground(CellType cellType) {
+        return buildBackground((cellType.equals(CellType.OBSTACLE) || cellType.equals(CellType.DEAD_BORDER)) ? Constants.CELL_COLOR : cellType.getColor());
     }
 
     public static Background buildBackground(String color) {
@@ -85,7 +86,7 @@ public final class UI {
             if (cell.isDeadBorder() || cell.isObstacle()) {
 
                 double borderthickness = Constants.FENCE_THICKNESS;
-                if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) borderthickness *= 2;
+                if (cell.getCellType().equals(CellType.OBSTACLE)) borderthickness *= 2;
 
                 // top
                 Cell topNeighbourCell = Data.getCellFromTheGrid(
@@ -120,7 +121,7 @@ public final class UI {
                             topBorder, bottomBorder, leftBorder, rightBorder));
 
                 if (cell.isDeadBorder() || cell.isObstacle()) {
-                    if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) {
+                    if (cell.getCellType().equals(CellType.OBSTACLE)) {
                         cell.getFxNode().setBackground(UI.buildBackground(Constants.OBSTACLE_CELL_BACKGROUND_COLOR));
                     } else {
                         cell.getFxNode().setBackground(UI.buildBackground(Constants.DEAD_BORDER_CELL_BACKGROUND_COLOR));
@@ -314,7 +315,7 @@ public final class UI {
         Constants.multipleThreads.execute(() -> {
             Data.BLOCKS.forEach(cell -> {
                 try {
-                    cell.changeType(Cell.CellType.EMPTY);
+                    cell.changeType(CellType.EMPTY);
 
                     if (cell.isObstacle()) cell.setObstacle(false);
                     if (cell.isDeadBorder()) cell.setDeadBorder(false);
@@ -327,7 +328,7 @@ public final class UI {
 
             Data.OBSTACLES.stream().forEach(cell -> {
                 try {
-                    if (cell.getCellType().equals(Cell.CellType.OBSTACLE)) cell.changeType(Cell.CellType.EMPTY);
+                    if (cell.getCellType().equals(CellType.OBSTACLE)) cell.changeType(CellType.EMPTY);
 
                     if (cell.isObstacle()) cell.setObstacle(false);
                     if (cell.isDeadBorder()) cell.setDeadBorder(false);
@@ -342,7 +343,7 @@ public final class UI {
 
             Data.DEAD_BORDER.stream().flatMap(Collection::stream).forEach(cell -> {
                 try {
-                    if (cell.getCellType().equals(Cell.CellType.DEAD_BORDER)) cell.changeType(Cell.CellType.EMPTY);
+                    if (cell.getCellType().equals(CellType.DEAD_BORDER)) cell.changeType(CellType.EMPTY);
 
                     if (cell.isObstacle()) cell.setObstacle(false);
                     if (cell.isDeadBorder()) cell.setDeadBorder(false);
@@ -362,7 +363,7 @@ public final class UI {
     private static void clearStartPoints() {
         Data.START_POINTS.forEach(cell -> {
             try {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
                 System.out.println(e.getMessage());
             }
@@ -375,7 +376,7 @@ public final class UI {
     private static void clearEndPoints() {
         Data.END_POINTS.forEach(cell -> {
             try {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
                 System.out.println(e.getMessage());
             }
@@ -402,7 +403,7 @@ public final class UI {
     private static void clearCalculations() {
         Data.FINAL_PATH_CELLS.forEach(cell -> {
             try {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
                 System.out.println(e.getMessage());
             }
@@ -413,7 +414,7 @@ public final class UI {
 
         Data.OPEN.forEach(cell -> {
             try {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
                 System.out.println(e.getMessage());
             }
@@ -422,7 +423,7 @@ public final class UI {
 
         Data.CLOSED.forEach(cell -> {
             try {
-                cell.changeType(Cell.CellType.EMPTY);
+                cell.changeType(CellType.EMPTY);
             } catch (CellMutationNotAllowed e) {
                 System.out.println(e.getMessage());
             }
